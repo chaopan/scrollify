@@ -4,6 +4,9 @@ const isDev =
 const GEMINI_URL = "/api/gemini";
 const LOCAL_URL = "http://localhost:3000/api/gemini";
 
+import { Track } from "src/types";
+import { exampleSuggestions } from "./spotify/exampleTrack";
+
 type track = { name: string; artist: string };
 
 type geminiAnswer = {
@@ -34,7 +37,10 @@ export const askGemini = async (tracks: track[]): Promise<geminiAnswer> => {
   return data;
 };
 
-export const getSuggestions = async (tracks: track[]) => {
+export const getSuggestions = async (tracks: track[]): Promise<Track[]> => {
+  /** THIS IS FOR TESTING: */
+  // return exampleSuggestions;
+
   const answer = await askGemini(tracks); //exampleResponse;
   console.log("gemini response data", answer);
   const songData = JSON.parse(answer.candidates[0].content.parts[0].text);

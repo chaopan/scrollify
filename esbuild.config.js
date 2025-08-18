@@ -19,6 +19,10 @@ const config = {
   define: {
     'process.env.NODE_ENV': isProduction ? '"production"' : '"development"',
   },
+  absWorkingDir: process.cwd(),
+  alias: {
+    src: './src',
+  },
   minify: isProduction,
   sourcemap: !isProduction,
 };

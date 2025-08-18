@@ -40,5 +40,9 @@ code {
   --color-ac-primary: #6d2612;
   --color-off-white: #e7eaeb;
   --color-textcolor: #000000;
-  --spacing: 2px;
+  --spacing: 1px;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

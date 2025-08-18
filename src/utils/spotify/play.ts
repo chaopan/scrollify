@@ -19,10 +19,8 @@ export const playTrack = async (trackId: string, deviceId: string) => {
       }),
     },
   );
-
-  if (response.json) {
-    const responseJson = await response.json();
-    console.log("playing track response", responseJson);
+  if (!response.ok) {
+    console.log("error", response);
     return false;
   }
 

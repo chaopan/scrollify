@@ -5,6 +5,7 @@ let player;
 export const setupWebPlayer = (
   onPlayerReady: (player: any, deviceId: string) => void,
   onStateChanged,
+  initialVolume: number = 0.5,
 ) => {
   window.onSpotifyWebPlaybackSDKReady = () => {
     const spotifyPlayer = new window.Spotify.Player({
@@ -14,7 +15,7 @@ export const setupWebPlayer = (
         const token = localStorage.getItem("access_token");
         cb(token);
       },
-      volume: 0.5,
+      volume: initialVolume,
     });
     // add ready listener
     spotifyPlayer.addListener("ready", ({ device_id }) => {
@@ -38,7 +39,7 @@ export const setupWebPlayer = (
       if (!state) {
         return;
       }
-      console.log("spotifyPlayer state changed", state);
+      console.log("spotifyPlayer state changed", state.position);
       onStateChanged(state);
     });
 

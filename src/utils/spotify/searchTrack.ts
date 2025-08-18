@@ -1,6 +1,10 @@
+import { SpotifyTrack } from "src/types";
 import { setupSpotifyRequest } from "../SpotifyAuth";
 
-export const searchTrack = async (title: string, artist: string) => {
+export const searchTrack = async (
+  title: string,
+  artist: string,
+): Promise<SpotifyTrack | undefined> => {
   setupSpotifyRequest();
 
   const token = localStorage.getItem("access_token");

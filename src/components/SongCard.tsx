@@ -1,507 +1,135 @@
 import React, { useEffect, useState, useRef } from "react";
 import { playTrack } from "../utils/spotify/play";
 import { VolumeSlider } from "./VolumeSlider";
+import { SpotifyTrack } from "src/types";
+import {
+  PlayIcon,
+  PauseIcon,
+  FastForwardIcon,
+  RewindIcon,
+} from "@phosphor-icons/react";
+import { ScrubBar } from "./ScrubBar";
+
+type SongCardProps = {
+  className: string;
+  track: SpotifyTrack;
+  onPreviousTrack: () => void;
+  onPlayPause: () => void;
+  onNextTrack: () => void;
+  isPaused: boolean;
+  onVolumeChange: (volume: number) => void;
+  isSongCurrent: boolean;
+  volume: number;
+};
 
 export const SongCard = ({
+  className,
   track,
   onPreviousTrack,
   onPlayPause,
   onNextTrack,
   isPaused,
   onVolumeChange,
-}) => {
+  isSongCurrent = false,
+  volume = 0.5,
+}: SongCardProps) => {
   if (!track) {
     <div>no track</div>;
   }
+  const imageUrl = track.album?.images?.[0]?.url;
+
   return (
-    <div>
-      <div className="container">
-        <button
-          onClick={() => {
-            playTrack();
-          }}
+    <div
+      className={`h-640 w-360 relative flex flex-col justify-end overflow-hidden rounded-xl shadow-xl ${className}`}
+    >
+      <VolumeSlider
+        className="z-20 mb-auto"
+        onChange={onVolumeChange}
+        value={volume}
+      />
+      <img
+        src={imageUrl}
+        style={{
+          position: "absolute",
+          inset: 0,
+          height: "75%",
+          objectFit: "cover",
+          pointerEvents: "none",
+          userSelect: "none",
+          zIndex: 2,
+        }}
+        alt={track.name}
+      />
+      <img
+        src={imageUrl}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          height: "100%",
+          // height: "20%",
+          objectFit: "cover",
+          objectPosition: "bottom",
+          // filter: "blur(24px) brightness(0.8)",
+          zIndex: 1,
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+        alt=""
+        aria-hidden="true"
+      />
+      <div
+        className="song_card_bottom flex flex-col items-center pb-20 pt-10"
+        style={{
+          position: "absolute",
+          zIndex: 3,
+          backgroundColor: "rgba(245,245,255,0.75)",
+          backdropFilter: "blur(20px)",
+          height: "25%",
+          width: "100%",
+        }}
+      >
+        <h2
+          id="current_track_name"
+          className="relative z-10 self-center whitespace-nowrap text-2xl font-bold"
         >
-          play specific song
-        </button>
-        <div className="main-wrapper">
-          <img
-            src={track.album.images[0].url}
-            className="now-playing__cover"
-            alt=""
-          />
+          {track.name}
+        </h2>
+        <p
+          id="current_track_title"
+          className="relative z-10 self-center font-bold"
+        >
+          {track.artists[0].name}
+        </p>
 
-          <div className="now-playing__side">
-            <div className="now-playing__name">{track.name}</div>
+        <div
+          id="song_card_controls"
+          className="relative z-20 mt-auto flex flex-row justify-center gap-20"
+        >
+          <button
+            className="btn-spotify m-1 cursor-pointer"
+            onClick={onPreviousTrack}
+          >
+            <RewindIcon />
+          </button>
 
-            <div className="now-playing__artist">{track.artists[0].name}</div>
-          </div>
+          <button
+            className="btn-spotify h-50 w-50 m-1 flex cursor-pointer items-center justify-center rounded-full border-2 border-white"
+            onClick={onPlayPause}
+          >
+            {isPaused ? <PlayIcon /> : <PauseIcon />}
+          </button>
+
+          <button
+            className="btn-spotify m-1 cursor-pointer"
+            onClick={onNextTrack}
+          >
+            <FastForwardIcon />
+          </button>
         </div>
-        <button className="btn-spotify bg-accent m-1" onClick={onPreviousTrack}>
-          &lt;&lt;
-        </button>
-
-        <button className="btn-spotify bg-accent m-1" onClick={onPlayPause}>
-          {isPaused ? "PLAY" : "PAUSE"}
-        </button>
-
-        <button className="btn-spotify bg-accent m-1" onClick={onNextTrack}>
-          &gt;&gt;
-        </button>
-
-        <VolumeSlider onChange={onVolumeChange} />
+        {isSongCurrent && (
+          <ScrubBar paused={isPaused} durationMs={track.duration_ms} />
+        )}
       </div>
     </div>
   );
-};
-
-const exampleTrack = {
-  album: {
-    album_type: "single",
-    artists: [
-      {
-        external_urls: {
-          spotify: "https://open.spotify.com/artist/1ZLU77nRzQIaP23mVSYpCQ",
-        },
-        href: "https://api.spotify.com/v1/artists/1ZLU77nRzQIaP23mVSYpCQ",
-        id: "1ZLU77nRzQIaP23mVSYpCQ",
-        name: "Hearts2Hearts",
-        type: "artist",
-        uri: "spotify:artist:1ZLU77nRzQIaP23mVSYpCQ",
-      },
-    ],
-    available_markets: [
-      "AR",
-      "AU",
-      "AT",
-      "BE",
-      "BO",
-      "BR",
-      "BG",
-      "CA",
-      "CL",
-      "CO",
-      "CR",
-      "CY",
-      "CZ",
-      "DK",
-      "DO",
-      "DE",
-      "EC",
-      "EE",
-      "SV",
-      "FI",
-      "FR",
-      "GR",
-      "GT",
-      "HN",
-      "HK",
-      "HU",
-      "IS",
-      "IE",
-      "IT",
-      "LV",
-      "LT",
-      "LU",
-      "MY",
-      "MT",
-      "MX",
-      "NL",
-      "NZ",
-      "NI",
-      "NO",
-      "PA",
-      "PY",
-      "PE",
-      "PH",
-      "PL",
-      "PT",
-      "SG",
-      "SK",
-      "ES",
-      "SE",
-      "CH",
-      "TW",
-      "TR",
-      "UY",
-      "US",
-      "GB",
-      "AD",
-      "LI",
-      "MC",
-      "ID",
-      "JP",
-      "TH",
-      "VN",
-      "RO",
-      "IL",
-      "ZA",
-      "SA",
-      "AE",
-      "BH",
-      "QA",
-      "OM",
-      "KW",
-      "EG",
-      "MA",
-      "DZ",
-      "TN",
-      "LB",
-      "JO",
-      "PS",
-      "IN",
-      "BY",
-      "KZ",
-      "MD",
-      "UA",
-      "AL",
-      "BA",
-      "HR",
-      "ME",
-      "MK",
-      "RS",
-      "SI",
-      "KR",
-      "BD",
-      "PK",
-      "LK",
-      "GH",
-      "KE",
-      "NG",
-      "TZ",
-      "UG",
-      "AG",
-      "AM",
-      "BS",
-      "BB",
-      "BZ",
-      "BT",
-      "BW",
-      "BF",
-      "CV",
-      "CW",
-      "DM",
-      "FJ",
-      "GM",
-      "GE",
-      "GD",
-      "GW",
-      "GY",
-      "HT",
-      "JM",
-      "KI",
-      "LS",
-      "LR",
-      "MW",
-      "MV",
-      "ML",
-      "MH",
-      "FM",
-      "NA",
-      "NR",
-      "NE",
-      "PW",
-      "PG",
-      "PR",
-      "WS",
-      "SM",
-      "ST",
-      "SN",
-      "SC",
-      "SL",
-      "SB",
-      "KN",
-      "LC",
-      "VC",
-      "SR",
-      "TL",
-      "TO",
-      "TT",
-      "TV",
-      "VU",
-      "AZ",
-      "BN",
-      "BI",
-      "KH",
-      "CM",
-      "TD",
-      "KM",
-      "GQ",
-      "SZ",
-      "GA",
-      "GN",
-      "KG",
-      "LA",
-      "MO",
-      "MR",
-      "MN",
-      "NP",
-      "RW",
-      "TG",
-      "UZ",
-      "ZW",
-      "BJ",
-      "MG",
-      "MU",
-      "MZ",
-      "AO",
-      "CI",
-      "DJ",
-      "ZM",
-      "CD",
-      "CG",
-      "IQ",
-      "LY",
-      "TJ",
-      "VE",
-      "ET",
-      "XK",
-    ],
-    external_urls: {
-      spotify: "https://open.spotify.com/album/2IjkSbisATTpSpVIlFVNkN",
-    },
-    href: "https://api.spotify.com/v1/albums/2IjkSbisATTpSpVIlFVNkN",
-    id: "2IjkSbisATTpSpVIlFVNkN",
-    images: [
-      {
-        height: 640,
-        url: "https://i.scdn.co/image/ab67616d0000b273d346fc1102eb417305b5358b",
-        width: 640,
-      },
-      {
-        height: 300,
-        url: "https://i.scdn.co/image/ab67616d00001e02d346fc1102eb417305b5358b",
-        width: 300,
-      },
-      {
-        height: 64,
-        url: "https://i.scdn.co/image/ab67616d00004851d346fc1102eb417305b5358b",
-        width: 64,
-      },
-    ],
-    is_playable: true,
-    name: "The Chase",
-    release_date: "2025-02-24",
-    release_date_precision: "day",
-    total_tracks: 2,
-    type: "album",
-    uri: "spotify:album:2IjkSbisATTpSpVIlFVNkN",
-  },
-  artists: [
-    {
-      external_urls: {
-        spotify: "https://open.spotify.com/artist/1ZLU77nRzQIaP23mVSYpCQ",
-      },
-      href: "https://api.spotify.com/v1/artists/1ZLU77nRzQIaP23mVSYpCQ",
-      id: "1ZLU77nRzQIaP23mVSYpCQ",
-      name: "Hearts2Hearts",
-      type: "artist",
-      uri: "spotify:artist:1ZLU77nRzQIaP23mVSYpCQ",
-    },
-  ],
-  available_markets: [
-    "AR",
-    "AU",
-    "AT",
-    "BE",
-    "BO",
-    "BR",
-    "BG",
-    "CA",
-    "CL",
-    "CO",
-    "CR",
-    "CY",
-    "CZ",
-    "DK",
-    "DO",
-    "DE",
-    "EC",
-    "EE",
-    "SV",
-    "FI",
-    "FR",
-    "GR",
-    "GT",
-    "HN",
-    "HK",
-    "HU",
-    "IS",
-    "IE",
-    "IT",
-    "LV",
-    "LT",
-    "LU",
-    "MY",
-    "MT",
-    "MX",
-    "NL",
-    "NZ",
-    "NI",
-    "NO",
-    "PA",
-    "PY",
-    "PE",
-    "PH",
-    "PL",
-    "PT",
-    "SG",
-    "SK",
-    "ES",
-    "SE",
-    "CH",
-    "TW",
-    "TR",
-    "UY",
-    "US",
-    "GB",
-    "AD",
-    "LI",
-    "MC",
-    "ID",
-    "JP",
-    "TH",
-    "VN",
-    "RO",
-    "IL",
-    "ZA",
-    "SA",
-    "AE",
-    "BH",
-    "QA",
-    "OM",
-    "KW",
-    "EG",
-    "MA",
-    "DZ",
-    "TN",
-    "LB",
-    "JO",
-    "PS",
-    "IN",
-    "BY",
-    "KZ",
-    "MD",
-    "UA",
-    "AL",
-    "BA",
-    "HR",
-    "ME",
-    "MK",
-    "RS",
-    "SI",
-    "KR",
-    "BD",
-    "PK",
-    "LK",
-    "GH",
-    "KE",
-    "NG",
-    "TZ",
-    "UG",
-    "AG",
-    "AM",
-    "BS",
-    "BB",
-    "BZ",
-    "BT",
-    "BW",
-    "BF",
-    "CV",
-    "CW",
-    "DM",
-    "FJ",
-    "GM",
-    "GE",
-    "GD",
-    "GW",
-    "GY",
-    "HT",
-    "JM",
-    "KI",
-    "LS",
-    "LR",
-    "MW",
-    "MV",
-    "ML",
-    "MH",
-    "FM",
-    "NA",
-    "NR",
-    "NE",
-    "PW",
-    "PG",
-    "PR",
-    "WS",
-    "SM",
-    "ST",
-    "SN",
-    "SC",
-    "SL",
-    "SB",
-    "KN",
-    "LC",
-    "VC",
-    "SR",
-    "TL",
-    "TO",
-    "TT",
-    "TV",
-    "VU",
-    "AZ",
-    "BN",
-    "BI",
-    "KH",
-    "CM",
-    "TD",
-    "KM",
-    "GQ",
-    "SZ",
-    "GA",
-    "GN",
-    "KG",
-    "LA",
-    "MO",
-    "MR",
-    "MN",
-    "NP",
-    "RW",
-    "TG",
-    "UZ",
-    "ZW",
-    "BJ",
-    "MG",
-    "MU",
-    "MZ",
-    "AO",
-    "CI",
-    "DJ",
-    "ZM",
-    "CD",
-    "CG",
-    "IQ",
-    "LY",
-    "TJ",
-    "VE",
-    "ET",
-    "XK",
-  ],
-  disc_number: 1,
-  duration_ms: 178900,
-  explicit: false,
-  external_ids: {
-    isrc: "KRA302500047",
-  },
-  external_urls: {
-    spotify: "https://open.spotify.com/track/68UrZQUuO3O6eUiD226xHg",
-  },
-  href: "https://api.spotify.com/v1/tracks/68UrZQUuO3O6eUiD226xHg",
-  id: "68UrZQUuO3O6eUiD226xHg",
-  is_local: false,
-  is_playable: true,
-  name: "The Chase",
-  popularity: 76,
-  preview_url: null,
-  track_number: 1,
-  type: "track",
-  uri: "spotify:track:68UrZQUuO3O6eUiD226xHg",
 };
