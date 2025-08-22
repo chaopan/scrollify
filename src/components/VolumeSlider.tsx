@@ -20,50 +20,69 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({
   className = "",
   disabled = false,
 }) => {
-  const [internalValue, setInternalValue] = useState(value ?? 0.5);
-  const [isSliderOpen, setIsSliderOpen] = useState(false);
-
-  // Keep internal value in sync with prop
-  useEffect(() => {
-    if (typeof value === "number") {
-      setInternalValue(value);
-    }
-  }, [value]);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSpeakerClick = () => {
-    //toggle slider open
-    setIsSliderOpen(!isSliderOpen);
+    setIsOpen(!isOpen);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
-    setInternalValue(newValue);
     if (onChange) {
       onChange(newValue);
     }
   };
 
+  // Close slider when clicking outside (optional enhancement)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        !(event.target as Element).closest(".volume-slider-container")
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
+
   return (
-    <div className={className + " group flex flex-col self-start text-center"}>
-      <button onClick={handleSpeakerClick}>
-        <SpeakerSimpleHighIcon weight="duotone" />
-      </button>
-      <div>
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={internalValue}
-          onChange={handleChange}
-          disabled={disabled}
-          aria-label="Volume"
-          className={`_volume_slider h-200 invisible group-hover:visible`}
-          style={{
-            direction: "rtl",
-            writingMode: "vertical-lr",
-          }}
-        />
+    <div className={`${className} volume-slider-container self-start p-10`}>
+      <div
+        role="region"
+        aria-label="Volume control"
+        className={`frosted-glass-1 flex cursor-pointer flex-col self-start rounded-full p-5 text-center ${
+          isOpen ? "gap-y-10 pb-8" : ""
+        }`}
+      >
+        <button
+          onClick={handleSpeakerClick}
+          className="cursor-pointer bg-transparent"
+          aria-label={isOpen ? "Hide volume slider" : "Show volume slider"}
+        >
+          <SpeakerSimpleHighIcon weight="bold" />
+        </button>
+        <div
+          className={`overflow-hidden ${isOpen ? "h-200" : "h-0"}`}
+          style={{ transition: "height 0.1s ease" }}
+        >
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onChange={handleChange}
+            disabled={disabled}
+            aria-label="Volume"
+            className="volume-slider h-200 cursor-pointer"
+          />
+        </div>
       </div>
     </div>
   );

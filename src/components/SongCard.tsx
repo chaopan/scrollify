@@ -8,7 +8,7 @@ import {
   FastForwardIcon,
   RewindIcon,
 } from "@phosphor-icons/react";
-import { ScrubBar } from "./ScrubBar";
+import { ProgressBar } from "./ProgressBar";
 
 type SongCardProps = {
   className: string;
@@ -20,6 +20,8 @@ type SongCardProps = {
   onVolumeChange: (volume: number) => void;
   isSongCurrent: boolean;
   volume: number;
+  webPlayerState: any;
+  onSeek: (newPos: number) => void;
 };
 
 export const SongCard = ({
@@ -32,22 +34,28 @@ export const SongCard = ({
   onVolumeChange,
   isSongCurrent = false,
   volume = 0.5,
+  webPlayerState,
+  onSeek,
 }: SongCardProps) => {
+  const primaryColor = "black";
+  const imageUrl = track.album?.images?.[0]?.url;
+
   if (!track) {
     <div>no track</div>;
   }
-  const imageUrl = track.album?.images?.[0]?.url;
-
   return (
     <div
       className={`h-640 w-360 relative flex flex-col justify-end overflow-hidden rounded-xl shadow-xl ${className}`}
     >
-      <VolumeSlider
-        className="z-20 mb-auto"
-        onChange={onVolumeChange}
-        value={volume}
-      />
+      {isSongCurrent && (
+        <VolumeSlider
+          className="z-20 mb-auto"
+          onChange={onVolumeChange}
+          value={volume}
+        />
+      )}
       <img
+        className={`card-img__${track.id}`}
         src={imageUrl}
         style={{
           position: "absolute",
@@ -61,73 +69,59 @@ export const SongCard = ({
         alt={track.name}
       />
       <img
+        className="bottom_card_img z-1 top-480 pointer-events-none absolute h-3/4 scale-y-[-1] select-none object-cover object-bottom blur-xl"
         src={imageUrl}
-        style={{
-          position: "absolute",
-          bottom: 0,
-          height: "100%",
-          // height: "20%",
-          objectFit: "cover",
-          objectPosition: "bottom",
-          // filter: "blur(24px) brightness(0.8)",
-          zIndex: 1,
-          pointerEvents: "none",
-          userSelect: "none",
-        }}
         alt=""
         aria-hidden="true"
       />
-      <div
-        className="song_card_bottom flex flex-col items-center pb-20 pt-10"
-        style={{
-          position: "absolute",
-          zIndex: 3,
-          backgroundColor: "rgba(245,245,255,0.75)",
-          backdropFilter: "blur(20px)",
-          height: "25%",
-          width: "100%",
-        }}
-      >
+      <div className="song_card_bottom z-3 absolute flex h-1/4 w-full flex-col items-center bg-white/60 p-10 pt-5">
         <h2
           id="current_track_name"
           className="relative z-10 self-center whitespace-nowrap text-2xl font-bold"
         >
           {track.name}
         </h2>
-        <p
-          id="current_track_title"
-          className="relative z-10 self-center font-bold"
-        >
+        <p id="current_track_title" className="relative z-10 self-center">
           {track.artists[0].name}
         </p>
 
         <div
           id="song_card_controls"
-          className="relative z-20 mt-auto flex flex-row justify-center gap-20"
+          className="relative z-20 mb-10 mt-10 flex flex-row justify-center gap-20"
         >
           <button
-            className="btn-spotify m-1 cursor-pointer"
+            className="btn-spotify m-1 cursor-pointer p-10"
             onClick={onPreviousTrack}
           >
-            <RewindIcon />
+            <RewindIcon size="20px" color={primaryColor} />
           </button>
 
           <button
-            className="btn-spotify h-50 w-50 m-1 flex cursor-pointer items-center justify-center rounded-full border-2 border-white"
+            className="btn-spotify m-1 flex cursor-pointer items-center justify-center rounded-full border-2 p-10"
+            style={{
+              borderColor: primaryColor,
+            }}
             onClick={onPlayPause}
           >
-            {isPaused ? <PlayIcon /> : <PauseIcon />}
+            {isPaused ? (
+              <PlayIcon size="30px" color={primaryColor} />
+            ) : (
+              <PauseIcon size="30px" color={primaryColor} />
+            )}
           </button>
 
           <button
-            className="btn-spotify m-1 cursor-pointer"
+            className="btn-spotify m-1 cursor-pointer p-10"
             onClick={onNextTrack}
           >
-            <FastForwardIcon />
+            <FastForwardIcon size="20px" color={primaryColor} />
           </button>
         </div>
         {isSongCurrent && (
-          <ScrubBar paused={isPaused} durationMs={track.duration_ms} />
+          <ProgressBar
+            webPlayerState={webPlayerState}
+            onChangePosition={onSeek}
+          />
         )}
       </div>
     </div>

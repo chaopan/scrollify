@@ -32,7 +32,7 @@ export const Scroller = ({ className, children, index }: ScrollerProps) => {
   return (
     <div
       className={
-        "h-680 hide-scrollbar flex w-full snap-y snap-mandatory flex-col items-center overflow-scroll " +
+        "h-680 hide-scrollbar flex w-full snap-y snap-mandatory flex-col items-center overflow-scroll overflow-y-hidden " +
         className
       }
       style={{

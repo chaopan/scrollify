@@ -19,11 +19,11 @@ export const ScrubBar = ({
   }, [reset]);
 
   return (
-    <div className="h-4 w-full overflow-hidden bg-gray-100">
+    <div className="h-4 w-full overflow-hidden bg-[rgba(255,255,255,0.5)]">
       <div
         key={key}
         ref={animationRef}
-        className="h-4 origin-left bg-blue-600"
+        className="h-4 origin-left bg-black"
         style={{
           width: "100%",
           transform: "scaleX(0)",

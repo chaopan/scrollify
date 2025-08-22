@@ -8,6 +8,7 @@ import {
   SpotifyWebPlayer,
   SpotifyResults,
   Track,
+  SpotifyWebPlaybackState,
 } from "src/types";
 import { EmptyCard } from "./EmptyCard";
 import { searchTrack } from "src/utils/spotify/searchTrack";
@@ -20,6 +21,20 @@ const INITIAL_QUEUE_LENGTH = 2;
 
 const normalizeTrack = (spotifyTrack: SpotifyTrack): Track => {
   return { name: spotifyTrack.name, artist: spotifyTrack.artists[0].name };
+};
+
+const songHasEnded = (prevState: any, state: any) => {
+  // console.log("songHasEnded?", prevState, state);
+  if (
+    prevState &&
+    state &&
+    prevState.track_window.current_track.id ===
+      state.track_window.current_track.id &&
+    prevState.playback_id !== state.playback_id
+  ) {
+    return true;
+  }
+  return false;
 };
 
 const setLocalVolume = debounce((value: number) => {
@@ -36,11 +51,15 @@ export const SongCardContainer = () => {
   );
   const [suggestedTracks, setSuggestedTracks] = useState<Track[]>([]);
   const [foundTracks, setFoundTracks] = useState<SpotifyTrack[]>([]);
+  const [webPlayerState, setWebPlayerState] =
+    useState<SpotifyWebPlaybackState | null>(null);
 
   const webPlayer = useRef<SpotifyWebPlayer | null>(null);
+  const lastPlayerStateRef = useRef<SpotifyWebPlaybackState | null>(null);
 
   useOnce(() => {
-    setupWebPlayer(handlePlayerSetup, handlePlayerStateChanged, volume);
+    //functions going into here are stale, so they can only reference refs.
+    setupWebPlayer(handlePlayerSetup, volume);
   });
 
   useEffect(() => {
@@ -87,13 +106,6 @@ export const SongCardContainer = () => {
   const handlePlayerSetup = (newPlayer: SpotifyWebPlayer, deviceId: string) => {
     webPlayer.current = newPlayer;
     setDeviceId(deviceId);
-    //testing
-    // playTrack(tracks[0].id, deviceId);
-  };
-
-  const handlePlayerStateChanged = (state: { paused: boolean }) => {
-    console.log("handleplayerstatechanged", state);
-    setIsPaused(state.paused);
   };
 
   const handlePreviousTrack = () => {
@@ -112,6 +124,12 @@ export const SongCardContainer = () => {
     setVolume(value);
     setLocalVolume(value);
     webPlayer.current?.setVolume(value);
+  };
+
+  const handleSeek = (newPositionMs: number) => {
+    webPlayer.current?.seek(newPositionMs).then(() => {
+      console.log("changed position!");
+    });
   };
 
   const handleAddTrack = async () => {
@@ -146,6 +164,33 @@ export const SongCardContainer = () => {
     }
   };
 
+  useEffect(() => {
+    const handlePlayerStateChanged = (state: SpotifyWebPlaybackState) => {
+      console.log("handleplayerstatechanged", state, isPaused);
+      const lastPlayerState = lastPlayerStateRef.current;
+      if (state) {
+        setWebPlayerState(state);
+      }
+      setIsPaused(state.paused);
+      if (songHasEnded(lastPlayerState, state)) {
+        handleNextTrack();
+      }
+      lastPlayerStateRef.current = state;
+    };
+
+    webPlayer?.current?.addListener(
+      "player_state_changed",
+      (state: SpotifyWebPlaybackState) => {
+        if (state) {
+          handlePlayerStateChanged(state);
+        }
+      },
+    );
+    return () => {
+      webPlayer?.current?.removeListener("player_state_changed");
+    };
+  }, [scrollIndex, deviceId, foundTracks]);
+
   return (
     <div>
       <Scroller className="gap-20" index={scrollIndex}>
@@ -166,6 +211,8 @@ export const SongCardContainer = () => {
               isPaused={isSongPaused(scrollIndex, trackIndex, isPaused)}
               onVolumeChange={handleVolumeChange}
               volume={volume}
+              webPlayerState={webPlayerState}
+              onSeek={handleSeek}
             />
           );
         })}

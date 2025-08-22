@@ -4,12 +4,11 @@ let player;
 
 export const setupWebPlayer = (
   onPlayerReady: (player: any, deviceId: string) => void,
-  onStateChanged,
   initialVolume: number = 0.5,
 ) => {
   window.onSpotifyWebPlaybackSDKReady = () => {
     const spotifyPlayer = new window.Spotify.Player({
-      name: "Web Playback SDK",
+      name: "Scrollify Web Player",
       enableMediaSession: true,
       getOAuthToken: (cb: (token: string | null) => void) => {
         const token = localStorage.getItem("access_token");
@@ -34,18 +33,9 @@ export const setupWebPlayer = (
       console.log("Spotify Webplayer SDK not ready with device_id", device_id);
     });
 
-    //listen to changes to the spotify state:
-    spotifyPlayer.addListener("player_state_changed", (state) => {
-      if (!state) {
-        return;
-      }
-      console.log("spotifyPlayer state changed", state.position);
-      onStateChanged(state);
-    });
-
     //finally connect the spotify player:
 
-    spotifyPlayer.connect().then((success) => {
+    spotifyPlayer.connect().then((success: any) => {
       console.log("spotifyPlayer connected success?", success);
     });
 
