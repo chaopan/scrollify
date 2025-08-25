@@ -13,7 +13,7 @@ const createPrompt = (tracks: Track[]) => {
   tracks.forEach((track) => {
     trackString = `${trackString}, ${track.name} - ${track.artist}`;
   });
-  return `Give a list of 10 song recommendations for someone who likes these songs(name - artist):\n ${trackString}`;
+  return `Give a list of 10 song recommendations for someone who likes these songs(name - artist). Do not include features, and avoid special characters. Here's the list: \n ${trackString}`;
 };
 
 type Validator = {

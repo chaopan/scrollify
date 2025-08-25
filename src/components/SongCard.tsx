@@ -9,6 +9,7 @@ import {
   RewindIcon,
 } from "@phosphor-icons/react";
 import { ProgressBar } from "./ProgressBar";
+import { useColorFromImage } from "src/utils/useColor";
 
 type SongCardProps = {
   className: string;
@@ -39,13 +40,15 @@ export const SongCard = ({
 }: SongCardProps) => {
   const primaryColor = "black";
   const imageUrl = track.album?.images?.[0]?.url;
+  const imageRef = useRef<HTMLImageElement>(null);
+  useColorFromImage(imageRef.current, isSongCurrent);
 
   if (!track) {
     <div>no track</div>;
   }
   return (
     <div
-      className={`h-640 w-360 relative flex flex-col justify-end overflow-hidden rounded-xl shadow-xl ${className}`}
+      className={`h-640 w-360 relative m-20 flex flex-shrink-0 flex-col justify-end overflow-hidden rounded-xl shadow-xl ${className}`}
     >
       {isSongCurrent && (
         <VolumeSlider
@@ -56,6 +59,7 @@ export const SongCard = ({
       )}
       <img
         className={`card-img__${track.id}`}
+        ref={imageRef}
         src={imageUrl}
         style={{
           position: "absolute",

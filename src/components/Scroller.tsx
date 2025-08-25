@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 type ScrollerProps = {
-  className: string;
+  className?: string;
   children: React.ReactNode;
   index: number;
 };
@@ -19,6 +19,7 @@ export const Scroller = ({ className, children, index }: ScrollerProps) => {
       if (child) {
         (child as HTMLElement).scrollIntoView({
           behavior: "smooth",
+          block: "center",
         });
       }
     }
@@ -31,14 +32,13 @@ export const Scroller = ({ className, children, index }: ScrollerProps) => {
 
   return (
     <div
-      className={
-        "h-680 hide-scrollbar flex w-full snap-y snap-mandatory flex-col items-center overflow-scroll overflow-y-hidden " +
-        className
+      className={`${className ?? ""} flex h-[calc(100vh-41px)] w-full flex-col items-center overflow-hidden`}
+      style={
+        {
+          // scrollbarWidth: "none",
+          // msOverflowStyle: "none",
+        }
       }
-      style={{
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-      }}
       ref={divRef}
     >
       {children}

@@ -17,6 +17,7 @@ import { StartCard } from "src/components/StartCard";
 import { debounce } from "src/utils/debounce";
 import { getTopItems } from "src/utils/spotify/getTopItems";
 import { getSuggestions } from "src/utils/queryAi";
+
 const INITIAL_QUEUE_LENGTH = 2;
 
 const normalizeTrack = (spotifyTrack: SpotifyTrack): Track => {
@@ -24,7 +25,6 @@ const normalizeTrack = (spotifyTrack: SpotifyTrack): Track => {
 };
 
 const songHasEnded = (prevState: any, state: any) => {
-  // console.log("songHasEnded?", prevState, state);
   if (
     prevState &&
     state &&
@@ -158,7 +158,7 @@ export const SongCardContainer = () => {
     setScrollIndex(idx);
     //get next track and append to tracks
     console.log("trackIndex", { trackIndex, fl: foundTracks.length });
-    const onPrevLastTrack = trackIndex === foundTracks.length - 1;
+    const onPrevLastTrack = trackIndex >= foundTracks.length - 2;
     if (onPrevLastTrack) {
       handleAddTrack();
     }
@@ -193,16 +193,13 @@ export const SongCardContainer = () => {
 
   return (
     <div>
-      <Scroller className="gap-20" index={scrollIndex}>
-        <StartCard
-          className="m-20 flex-shrink-0 snap-center"
-          onStart={handleStart}
-        />
+      <Scroller index={scrollIndex}>
+        <StartCard className="m-20 flex-shrink-0" onStart={handleStart} />
         {foundTracks.map((track, trackIndex) => {
           return (
             <SongCard
               key={track.name}
-              className="m-20 flex-shrink-0 snap-center"
+              className={`track-${track.id}`}
               track={track}
               isSongCurrent={isSongCurrent(scrollIndex, trackIndex)}
               onNextTrack={handleNextTrack}
@@ -216,6 +213,7 @@ export const SongCardContainer = () => {
             />
           );
         })}
+        <EmptyCard />
       </Scroller>
     </div>
   );

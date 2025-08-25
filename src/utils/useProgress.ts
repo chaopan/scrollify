@@ -14,7 +14,6 @@ export const useProgressBarPosition = ({
   let lastPositionRef = useRef(position);
   //ms of the position
   const [currentPosition, setCurrentPosition] = useState(position);
-
   useEffect(() => {
     if (position !== lastPositionRef.current) {
       setCurrentPosition(position);

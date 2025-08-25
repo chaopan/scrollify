@@ -19,17 +19,20 @@ code {
 } 
 
 @theme {
-
-  --color-primary: oklch(0.6 0.2 240);
-  --color-secondary: oklch(0.5 0.16 245);
-  --color-accent: oklch(0.7 0.25 235);
-  --color-background: oklch(0.96 0.01 240);
+  --color-primary: #1B1F3B;
+  --color-secondary: #6C63FF;
+  --color-accent: #00E6A8;
+  --color-white: rgb(243,245,247);
+  --color-black: #0A0E12;
 
   --color-light: oklch(0.93 0.01 240) ;
   --color-dark: oklch(0.35 0.08 240);
   --color-white: oklch(0.96 0.01 240);
 
   --color-full-background: #2c2c2c;
+  --color-song-primary: var(--color-secondary);
+  --color-song-secondary: var(--color-accent);
+
 
   --color-common-border: #cfaa75;
   --color-bg-nav: #cfaa75;
@@ -43,12 +46,12 @@ code {
   --spacing: 1px;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
+/* .hide-scrollbar::-webkit-scrollbar {
   display: none;
-}
+} */
 
 .frosted-glass-1 {
-  background-color: rgba(255,255,255,0.8)
+  background-color: rgba(243,245,247,0.8)
 }
 
 .volume-slider {

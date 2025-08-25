@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { SongCardContainer } from "./components/SongCardContainer";
 import { refreshTokenOnLoad } from "./utils/SpotifyAuth";
+import { Header } from "src/components/Header";
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -8,8 +9,8 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="bg-primary h-40 w-full"></div>
+    <div className="from-song-primary to-song-secondary h-lvh bg-gradient-to-b transition-colors duration-500 ease-in-out">
+      <Header />
       <div className="mx-auto flex flex-col items-center">
         <SongCardContainer />
       </div>

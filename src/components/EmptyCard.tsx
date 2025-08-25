@@ -6,7 +6,9 @@ export const EmptyCard = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <div className={`${className} h-640 w-360 rounded-xl bg-red-100 shadow-xl`}>
+    <div
+      className={`${className} h-640 w-360 rounded-xl bg-white/10 shadow-xl`}
+    >
       {children}
     </div>
   );

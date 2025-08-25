@@ -9,10 +9,11 @@ export const ProgressBar = ({
   onChangePosition: (newValue: number) => void;
 }) => {
   const [currentPosition] = useProgressBarPosition({
-    position: webPlayerState?.position || 0,
-    paused: webPlayerState?.paused || true,
-    duration: webPlayerState?.duration || 0,
+    position: webPlayerState?.position,
+    paused: webPlayerState?.paused,
+    duration: webPlayerState?.duration,
   });
+
   const [isDragging, setIsDragging] = useState(false);
   const [rangeValue, setRangeValue] = useState<number>(0);
 
@@ -45,7 +46,7 @@ export const ProgressBar = ({
       <input
         type="range"
         className="progress-slider w-full cursor-pointer"
-        value={currentPosition}
+        value={currentPosition || 0}
         onChange={handleChange}
         onMouseDown={handleMouseDown}
         onTouchStart={handleMouseDown}
