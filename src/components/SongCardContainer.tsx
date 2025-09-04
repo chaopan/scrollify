@@ -38,7 +38,7 @@ const songHasEnded = (prevState: any, state: any) => {
 };
 
 const setLocalVolume = debounce((value: number) => {
-  console.log("persisting volume");
+  console.log("persisting volume", value);
   localStorage.setItem("music_volume", `${value}`);
 }, 1000);
 
@@ -53,6 +53,7 @@ export const SongCardContainer = () => {
   const [foundTracks, setFoundTracks] = useState<SpotifyTrack[]>([]);
   const [webPlayerState, setWebPlayerState] =
     useState<SpotifyWebPlaybackState | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const webPlayer = useRef<SpotifyWebPlayer | null>(null);
   const lastPlayerStateRef = useRef<SpotifyWebPlaybackState | null>(null);
@@ -71,6 +72,7 @@ export const SongCardContainer = () => {
 
   const handleStart = async () => {
     try {
+      setLoading(true);
       const spotifyResults: SpotifyResults = await getTopItems("tracks");
       console.log("topTracks", spotifyResults.items);
       const normalizedTracks = spotifyResults.items.map((spotifyTrack) => {
@@ -78,6 +80,7 @@ export const SongCardContainer = () => {
       });
 
       //get gemini suggestions TODO: suggestion sizes
+
       const aiResultTracks = await getSuggestions(normalizedTracks);
       console.log("suggestedTracks", aiResultTracks);
       setSuggestedTracks(aiResultTracks);
@@ -95,8 +98,7 @@ export const SongCardContainer = () => {
       );
       setFoundTracks(trackList);
 
-      //next handleNextTrack.
-
+      setLoading(false);
       setTimeout(() => handleNextTrack(), 1000);
     } catch (e) {
       console.error("ERROR:", e);
@@ -194,7 +196,11 @@ export const SongCardContainer = () => {
   return (
     <div>
       <Scroller index={scrollIndex}>
-        <StartCard className="m-20 flex-shrink-0" onStart={handleStart} />
+        <StartCard
+          className="m-20 flex-shrink-0"
+          onStart={handleStart}
+          loading={loading}
+        />
         {foundTracks.map((track, trackIndex) => {
           return (
             <SongCard

@@ -146,5 +146,25 @@ export const redirectToAuthCodeFlow = async () => {
   document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
 };
 
+export const getUserInfo = async () => {
+  const accessToken = localStorage.getItem("access_token");
+  if (!accessToken) {
+    throw new Error("No access token found");
+  }
+
+  const response = await fetch("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user info");
+  }
+
+  const userInfo = await response.json();
+  return userInfo;
+};
+
 // onload - check if we've come from spotify login
 handlePostLogin();
